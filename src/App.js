@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import Navbar from './components/Navbar.js'
+import { Box } from '@mui/material'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 function App() {
 
@@ -15,12 +18,24 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <Box sx={{ flexGrow: 1 }}>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/">
+            <Route index element={<h6>Generic</h6>} />
+            <Route path="movies" element={<h6>Movies</h6>} />
+            <Route path="customers" element={<h6>Customers</h6>} />
+            <Route path="reports" element={<h6>Reports</h6>} />
+            <Route path="*" element={<h6>Something Else</h6>} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
       <h3>{
         (typeof backendData.hello === 'undefined') ?
           "Loading..." : backendData.hello
       }</h3>
-    </div>
+    </Box>
   )
 }
 
