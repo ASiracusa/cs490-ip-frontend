@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from './components/Navbar.js'
+import HomePage from './components/HomePage.js'
 import { Box } from '@mui/material'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 function App() {
 
   const [backendData, setBackendData] = useState([{}]);
-
+  
   useEffect(() => {
+    console.log("[] USE EFFECT []");
     fetch("/api/hello").then(
       response => response.json()
     ).then(
       data => {
         setBackendData(data);
+        console.log(data);
       }
     )
   }, []);
@@ -23,7 +26,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/">
-            <Route index element={<h6>Generic</h6>} />
+            <Route index element={<HomePage />} />
             <Route path="movies" element={<h6>Movies</h6>} />
             <Route path="customers" element={<h6>Customers</h6>} />
             <Route path="reports" element={<h6>Reports</h6>} />
@@ -31,10 +34,10 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-      <h3>{
+      {/* <h3>{
         (typeof backendData.hello === 'undefined') ?
           "Loading..." : backendData.hello
-      }</h3>
+      }</h3> */}
     </Box>
   )
 }
