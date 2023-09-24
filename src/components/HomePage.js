@@ -78,6 +78,7 @@ function HomePage() {
               <p><i>{selectedMovie.description}</i></p>
               <p>Release Year: {selectedMovie.release_year}</p>
               <p>Rating: {selectedMovie.rating}</p>
+              <p>Genre: {selectedMovie.genre}</p>
               <p>Length: {Math.floor(selectedMovie.length/60)}h{selectedMovie.length%60}m</p>
               <p>Rental Price: ${selectedMovie.rental_rate}</p>
             </div>}
