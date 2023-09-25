@@ -7,10 +7,13 @@ function Navbar() {
   return (
     <AppBar position="static" sx={{ padding: 2 }}>
         <Grid container spacing={2}>
-            <Grid item xs={9}>
+            <Grid item xs={8}>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     Movies Website
                 </Typography>
+            </Grid>
+            <Grid item xs={1}>
+                <Link to="/">Home</Link>
             </Grid>
             <Grid item xs={1}>
                 <Link to="/movies">Movies</Link>
