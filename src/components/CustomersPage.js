@@ -9,6 +9,7 @@ function CustomersPage() {
   const [lastName, setLastName] = useState("");
   const [searchedCustomers, setSearchedCustomers] = useState();
   const [selectedCustomer, setSelectedCustomer] = useState();
+  const [customersRentals, setCustomersRentals] = useState();
 
   useEffect(() => {
     searchCustomers();
@@ -30,6 +31,13 @@ function CustomersPage() {
     ).then(
       data => {
         setSelectedCustomer(data[0]);
+      }
+    )
+    fetch("/api/customersRentals?customerId=" + customerId).then(
+      response => response.json()
+    ).then(
+      data => {
+        setCustomersRentals(data);
       }
     )
   }
@@ -84,6 +92,17 @@ function CustomersPage() {
               <p>Email: {selectedCustomer.email}</p>
               <p>Address: {selectedCustomer.address}, {selectedCustomer.city}, {selectedCustomer.country}</p>
               <p>Store ID: {selectedCustomer.store_id}</p>
+              <Typography variant="h6">Customer's Rentals</Typography>
+              {(typeof customersRentals === 'undefined') ? "" : customersRentals.map((rental) => {
+                return <Card variant="outlined" sx={{ padding: 2 }}>
+                  <p><b>{rental.title}</b></p>
+                  <p>Rented: {(new Date(Date.parse(rental.rental_date))).toDateString()}</p>
+                  <p>{rental.return_date !== null ?
+                    'Returned: ' + (new Date(Date.parse(rental.return_date))).toDateString() : <i>Not returned yet.</i>
+                  }</p>
+                  <p>Store ID: {rental.store_id}</p>
+                </Card>
+              })}
             </div>}
           </Card>
         </Grid>
