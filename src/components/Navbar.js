@@ -13,16 +13,16 @@ function Navbar() {
                 </Typography>
             </Grid>
             <Grid item xs={1}>
-                <Link to="/">Home</Link>
+                <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Home</Link>
             </Grid>
             <Grid item xs={1}>
-                <Link to="/movies">Movies</Link>
+                <Link to="/movies" style={{ color: 'white', textDecoration: 'none' }}>Movies</Link>
             </Grid>
             <Grid item xs={1}>
-                <Link to="/customers">Customers</Link>
+                <Link to="/customers" style={{ color: 'white', textDecoration: 'none' }}>Customers</Link>
             </Grid>
             <Grid item xs={1}>
-                <Link to="/reports">Reports</Link>
+                <Link to="/reports" style={{ color: 'white', textDecoration: 'none' }}>Reports</Link>
             </Grid>
         </Grid>
         

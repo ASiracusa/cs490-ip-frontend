@@ -42,6 +42,17 @@ function CustomersPage() {
     )
   }
 
+  function returnRental (rentalId, inventoryId) {
+    fetch("/api/returnRentalInv?inventoryId=" + inventoryId).then(
+      response => response.json()
+    )
+    fetch("/api/returnRental?rentalId=" + rentalId).then(
+      response => response.json()
+    ).then(
+      selectCustomer(customerId)
+    );
+  }
+
   return (
     <Box sx={{ flexGrow: 1, padding: 2 }} >
       <Grid container spacing={2}>
@@ -98,7 +109,15 @@ function CustomersPage() {
                   <p><b>{rental.title}</b></p>
                   <p>Rented: {(new Date(Date.parse(rental.rental_date))).toDateString()}</p>
                   <p>{rental.return_date !== null ?
-                    'Returned: ' + (new Date(Date.parse(rental.return_date))).toDateString() : <i>Not returned yet.</i>
+                    'Returned: ' + (new Date(Date.parse(rental.return_date))).toDateString() :
+                    <div>
+                      <i>Not returned yet. {rental.rental_id} - {rental.inventory_id}</i>
+                      <p><Button variant="contained" onClick={() => {
+                        returnRental(rental.rental_id, rental.inventory_id);
+                      }}>
+                        Return
+                      </Button></p>
+                    </div>
                   }</p>
                   <p>Store ID: {rental.store_id}</p>
                 </Card>
