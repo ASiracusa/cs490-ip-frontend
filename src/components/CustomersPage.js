@@ -10,12 +10,14 @@ function CustomersPage() {
   const [searchedCustomers, setSearchedCustomers] = useState();
   const [selectedCustomer, setSelectedCustomer] = useState();
   const [customersRentals, setCustomersRentals] = useState();
+  const [userDeleted, setUserDeleted] = useState(false);
 
   useEffect(() => {
     searchCustomers();
   }, []);
 
   function searchCustomers () {
+    setUserDeleted(false);
     fetch("/api/searchCustomers?customerId=" + customerId + "&firstName=" + firstName + "&lastName=" + lastName).then(
       response => response.json()
     ).then(
@@ -51,6 +53,15 @@ function CustomersPage() {
     ).then(
       selectCustomer(customerId)
     );
+  }
+
+  function deleteCustomer (customerId) {
+    fetch("/api/deleteCustomer?customerId=" + customerId).then(
+      response => response.json()
+    ).then(() => {
+      setSelectedCustomer(undefined);
+      searchCustomers();
+    });
   }
 
   return (
@@ -97,12 +108,21 @@ function CustomersPage() {
         <Grid item xs={6}>
           <Card variant="outlined" sx={{ padding: 2 }}>
             <Typography variant="h6">Customer Details</Typography>
-            {(typeof selectedCustomer === 'undefined') ? <i>No customer is selected</i> : <div>
+            {(typeof selectedCustomer === 'undefined') ? (
+              userDeleted ?
+                <i>Customer successfully deleted.</i> :
+                <i>No customer is selected.</i>
+            ) : <div>
               <p><b>{selectedCustomer.first_name} {selectedCustomer.last_name} ({selectedCustomer.customer_id})</b></p>
               <p>Active Status: {selectedCustomer.active ? 'Active' : 'Inactive'}</p>
               <p>Email: {selectedCustomer.email}</p>
               <p>Address: {selectedCustomer.address}, {selectedCustomer.city}, {selectedCustomer.country}</p>
               <p>Store ID: {selectedCustomer.store_id}</p>
+              <p><Button variant="contained" color="error" onClick={() => {
+                deleteCustomer(selectedCustomer.customer_id);
+              }}>
+                DELETE CUSTOMER
+              </Button></p>
               <Typography variant="h6">Customer's Rentals</Typography>
               {(typeof customersRentals === 'undefined') ? "" : customersRentals.map((rental) => {
                 return <Card variant="outlined" sx={{ padding: 2 }}>
@@ -111,7 +131,7 @@ function CustomersPage() {
                   <p>{rental.return_date !== null ?
                     'Returned: ' + (new Date(Date.parse(rental.return_date))).toDateString() :
                     <div>
-                      <i>Not returned yet. {rental.rental_id} - {rental.inventory_id}</i>
+                      <i>Not returned yet.</i>
                       <p><Button variant="contained" onClick={() => {
                         returnRental(rental.rental_id, rental.inventory_id);
                       }}>
