@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Grid, Card, Typography, TextField, Button, IconButton } from '@mui/material'
+import { Box, Grid, Card, Typography, TextField, Button, IconButton, Checkbox, Select, MenuItem, FormControl, InputLabel } from '@mui/material'
 import { Info } from '@mui/icons-material'
 
 function CustomersPage() {
@@ -11,13 +11,21 @@ function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState();
   const [customersRentals, setCustomersRentals] = useState();
   const [userDeleted, setUserDeleted] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(false);
+  const [eFirstName, setEFirstName] = useState("");
+  const [eLastName, setELastName] = useState("");
+  const [eActive, setEActive] = useState(false);
+  const [eEmail, setEEmail] = useState("");
+  // const [eAddress, setEAddress] = useState("");
+  // const [eCity, setECity] = useState("");
+  // const [eCountry, setECountry] = useState("");
+  const [eStoreId, setEStoreId] = useState("");
 
   useEffect(() => {
     searchCustomers();
   }, []);
 
   function searchCustomers () {
-    setUserDeleted(false);
     fetch("/api/searchCustomers?customerId=" + customerId + "&firstName=" + firstName + "&lastName=" + lastName).then(
       response => response.json()
     ).then(
@@ -28,6 +36,8 @@ function CustomersPage() {
   }
 
   function selectCustomer (customerId) {
+    setUserDeleted(false);
+    setEditingCustomer(false);
     fetch("/api/customerInfo?customerId=" + customerId).then(
       response => response.json()
     ).then(
@@ -61,6 +71,35 @@ function CustomersPage() {
     ).then(() => {
       setSelectedCustomer(undefined);
       searchCustomers();
+    });
+  }
+
+  function prefillCustomerInfo () {
+    setEditingCustomer(true);
+    setEFirstName(selectedCustomer.first_name);
+    setELastName(selectedCustomer.last_name);
+    setEActive(selectedCustomer.active);
+    setEEmail(selectedCustomer.email);
+    // setEAddress(selectedCustomer.address);
+    // setECity(selectedCustomer.city);
+    // setECountry(selectedCustomer.country);
+    setEStoreId(selectedCustomer.store_id);
+  }
+
+  function saveCustomerInfo () {
+    fetch("/api/updateCustomerDetails?customerId=" + selectedCustomer.customer_id +
+                                  "&addressId=" + selectedCustomer.address_id + 
+                                  "&firstName=" + eFirstName +
+                                  "&lastName=" + eLastName +
+                                  "&active=" + eActive +
+                                  "&email=" + eEmail +
+                                  // "&address=" + eAddress +
+                                  // "&city=" + eCity +
+                                  // "&country=" + eCountry +
+                                  "&storeId=" + eStoreId).then(
+      response => response.json()
+    ).then(() => {
+      selectCustomer(selectedCustomer.customer_id);
     });
   }
 
@@ -112,13 +151,18 @@ function CustomersPage() {
               userDeleted ?
                 <i>Customer successfully deleted.</i> :
                 <i>No customer is selected.</i>
-            ) : <div>
+            ) : (!editingCustomer ? <div>
               <p><b>{selectedCustomer.first_name} {selectedCustomer.last_name} ({selectedCustomer.customer_id})</b></p>
               <p>Active Status: {selectedCustomer.active ? 'Active' : 'Inactive'}</p>
               <p>Email: {selectedCustomer.email}</p>
               <p>Address: {selectedCustomer.address}, {selectedCustomer.city}, {selectedCustomer.country}</p>
               <p>Store ID: {selectedCustomer.store_id}</p>
-              <p><Button variant="contained" color="error" onClick={() => {
+              <p><Button variant="contained" color="primary" onClick={() => {
+                prefillCustomerInfo();
+              }}>
+                EDIT CUSTOMER DETAILS
+              </Button>{' '}
+              <Button variant="contained" color="error" onClick={() => {
                 deleteCustomer(selectedCustomer.customer_id);
               }}>
                 DELETE CUSTOMER
@@ -142,7 +186,52 @@ function CustomersPage() {
                   <p>Store ID: {rental.store_id}</p>
                 </Card>
               })}
-            </div>}
+            </div> :
+            <div>
+              <p><TextField id="inpEFirstName" label="First Name" variant="filled" value={eFirstName} onChange={(event) => {
+                setEFirstName(event.target.value);
+              }}/>{' '}
+              <TextField id="inpELastName" label="Last Name" variant="filled" value={eLastName} onChange={(event) => {
+                setELastName(event.target.value);
+              }}/></p>
+              <p><Checkbox inputProps={{ 'aria-label': 'controlled' }} checked={eActive} onChange={(event) => {
+                setEActive(event.target.checked);
+              }}/>Active</p>
+              <p><TextField id="inpEEmail" label="Email" variant="filled" value={eEmail} onChange={(event) => {
+                setEEmail(event.target.value);
+              }}/></p>
+              {/* <p><TextField id="inpEAddress" label="Address" variant="filled" value={eAddress} onChange={(event) => {
+                setEAddress(event.target.value);
+              }}/>{' '}
+              <TextField id="inpECity" label="City" variant="filled" value={eCity} onChange={(event) => {
+                setECity(event.target.value);
+              }}/>{' '}
+              <TextField id="inpECountry" label="Country" variant="filled" value={eCountry} onChange={(event) => {
+                setECountry(event.target.value);
+              }}/></p> */}
+              <p><FormControl sx={{ m: 1, minWidth: 120 }}><InputLabel id="inpEStoreIdLabel">Store ID</InputLabel><Select
+                id="inpEStoreId"
+                value={eStoreId}
+                label="Store ID"
+                autoWidth
+                onChange={(event) => {
+                  setEStoreId(event.target.value);
+                }}
+              >
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+              </Select></FormControl></p>
+              <p><Button variant="contained" onClick={() => {
+                saveCustomerInfo();
+              }}>
+                SAVE
+              </Button>
+              <Button onClick={() => {
+                setEditingCustomer(false);
+              }}>
+                CANCEL
+              </Button></p>
+            </div>)}
           </Card>
         </Grid>
       </Grid>
