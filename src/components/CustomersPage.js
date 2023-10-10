@@ -11,6 +11,7 @@ function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState();
   const [customersRentals, setCustomersRentals] = useState();
   const [userDeleted, setUserDeleted] = useState(false);
+  const [userAdded, setUserAdded] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(false);
   const [addingCustomer, setAddingCustomer] = useState(false);
   const [eFirstName, setEFirstName] = useState("");
@@ -38,7 +39,9 @@ function CustomersPage() {
 
   function selectCustomer (customerId) {
     setUserDeleted(false);
+    setUserAdded(false);
     setEditingCustomer(false);
+    setAddingCustomer(false);
     fetch("/api/customerInfo?customerId=" + customerId).then(
       response => response.json()
     ).then(
@@ -87,6 +90,18 @@ function CustomersPage() {
     setEStoreId(selectedCustomer.store_id);
   }
 
+  function resetCustomerInfo() {
+    setAddingCustomer(true);
+    setEFirstName("");
+    setELastName("");
+    setEActive(true);
+    setEEmail("");
+    setEAddress("");
+    setECity("");
+    setECountry("");
+    setEStoreId(1);
+  }
+
   function saveCustomerInfo () {
     fetch("/api/updateCustomerDetails?customerId=" + selectedCustomer.customer_id +
                                   "&firstName=" + eFirstName +
@@ -97,6 +112,20 @@ function CustomersPage() {
       response => response.json()
     ).then(() => {
       selectCustomer(selectedCustomer.customer_id);
+    });
+  }
+
+  function addCustomer (addressId) {
+    fetch("/api/addCustomer?firstName=" + eFirstName +
+                          "&lastName=" + eLastName +
+                          "&active=" + eActive +
+                          "&email=" + eEmail +
+                          "&storeId=" + eStoreId +
+                          "&addressId=" + addressId).then(
+      response => response.json()
+    ).then(() => {
+      setUserAdded(true);
+      setAddingCustomer(false);
     });
   }
 
@@ -131,15 +160,15 @@ function CustomersPage() {
           fetch("/api/getCity?city=" + eCity + "&countryId=" + countryId).then(
             response => response.json()
           ).then(data => {
-            editAddress(data[0].city_id);
+            editingCustomer ? editAddress(data[0].city_id) : addAddress(data[0].city_id);
           });
         });
       } else {
-        editAddress(data[0].city_id);
+        editingCustomer ? editAddress(data[0].city_id) : addAddress(data[0].city_id);
       }
     })
   }
-
+  
   function editAddress (cityId) {
     fetch("/api/updateAddress?address=" + eAddress + "&addressId=" + selectedCustomer.address_id + "&cityId=" + cityId).then(
       response => response.json()
@@ -148,10 +177,22 @@ function CustomersPage() {
     })
   }
 
+  function addAddress (cityId) {
+    fetch("/api/addAddress?address=" + eAddress + "&cityId=" + cityId).then(
+      response => response.json()
+    ).then(() => {
+      fetch("/api/getAddress?address=" + eAddress + "&cityId=" + cityId).then(
+        response => response.json()
+      ).then(data => {
+        addCustomer(data[0].address_id);
+      });
+    });
+  }
+
   return (
     <Box sx={{ flexGrow: 1, padding: 2 }} >
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <Card variant="outlined" sx={{ padding: 2 }}>
             <Typography variant="h6">Search Customers</Typography>
             <p><TextField id="inpCustId" label="Customer ID" variant="filled" value={customerId} onChange={(event) => {
@@ -167,10 +208,13 @@ function CustomersPage() {
               searchCustomers();
             }}>
               Search
+            </Button>{" "}
+            <Button id="addCustomerButtom" variant="contained" onClick={() => {
+              resetCustomerInfo();
+            }}>
+              Add Customer
             </Button></p>
           </Card>
-        </Grid>
-        <Grid item xs={6}>
           <Card variant="outlined" sx={{ padding: 2 }}>
             <Typography variant="h6">List of Customers</Typography>
             {(typeof searchedCustomers === 'undefined') ? "" : searchedCustomers.map((customer) => {
@@ -192,9 +236,11 @@ function CustomersPage() {
         <Grid item xs={6}>
           <Card variant="outlined" sx={{ padding: 2 }}>
             <Typography variant="h6">Customer Details</Typography>
-            {(typeof selectedCustomer === 'undefined') ? (
+            {(typeof selectedCustomer === 'undefined' && !addingCustomer) ? (
               userDeleted ?
                 <i>Customer successfully deleted.</i> :
+              userAdded ?
+                <i>Customer successfully added.</i> :
                 <i>No customer is selected.</i>
             ) : (!editingCustomer && !addingCustomer ? <div>
               <p><b>{selectedCustomer.first_name} {selectedCustomer.last_name} ({selectedCustomer.customer_id})</b></p>
@@ -233,6 +279,7 @@ function CustomersPage() {
               })}
             </div> :
             <div>
+              <Typography variant="h6">{editingCustomer ? "Editing Customer Details" : "Adding New Customer"}</Typography>
               <p><TextField id="inpEFirstName" label="First Name" variant="filled" value={eFirstName} onChange={(event) => {
                 setEFirstName(event.target.value);
               }}/>{' '}
