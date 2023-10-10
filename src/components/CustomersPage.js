@@ -12,13 +12,14 @@ function CustomersPage() {
   const [customersRentals, setCustomersRentals] = useState();
   const [userDeleted, setUserDeleted] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(false);
+  const [addingCustomer, setAddingCustomer] = useState(false);
   const [eFirstName, setEFirstName] = useState("");
   const [eLastName, setELastName] = useState("");
   const [eActive, setEActive] = useState(false);
   const [eEmail, setEEmail] = useState("");
-  // const [eAddress, setEAddress] = useState("");
-  // const [eCity, setECity] = useState("");
-  // const [eCountry, setECountry] = useState("");
+  const [eAddress, setEAddress] = useState("");
+  const [eCity, setECity] = useState("");
+  const [eCountry, setECountry] = useState("");
   const [eStoreId, setEStoreId] = useState("");
 
   useEffect(() => {
@@ -80,27 +81,71 @@ function CustomersPage() {
     setELastName(selectedCustomer.last_name);
     setEActive(selectedCustomer.active);
     setEEmail(selectedCustomer.email);
-    // setEAddress(selectedCustomer.address);
-    // setECity(selectedCustomer.city);
-    // setECountry(selectedCustomer.country);
+    setEAddress(selectedCustomer.address);
+    setECity(selectedCustomer.city);
+    setECountry(selectedCustomer.country);
     setEStoreId(selectedCustomer.store_id);
   }
 
   function saveCustomerInfo () {
     fetch("/api/updateCustomerDetails?customerId=" + selectedCustomer.customer_id +
-                                  "&addressId=" + selectedCustomer.address_id + 
                                   "&firstName=" + eFirstName +
                                   "&lastName=" + eLastName +
                                   "&active=" + eActive +
                                   "&email=" + eEmail +
-                                  // "&address=" + eAddress +
-                                  // "&city=" + eCity +
-                                  // "&country=" + eCountry +
                                   "&storeId=" + eStoreId).then(
       response => response.json()
     ).then(() => {
       selectCustomer(selectedCustomer.customer_id);
     });
+  }
+
+  function editCountry () {
+    fetch("/api/getCountry?country=" + eCountry).then(
+      response => response.json()
+    ).then(data => {
+      if (data.length === 0) {
+        fetch("/api/addCountry?country=" + eCountry).then(
+          response => response.json()
+        ).then(() => {
+          fetch("/api/getCountry?country=" + eCountry).then(
+            response => response.json()
+          ).then(data => {
+            editCity(data[0].country_id);
+          });
+        });
+      } else {
+        editCity(data[0].country_id);
+      }
+    })
+  }
+
+  function editCity (countryId) {
+    fetch("/api/getCity?city=" + eCity + "&countryId=" + countryId).then(
+      response => response.json()
+    ).then(data => {
+      if (data.length === 0) {
+        fetch("/api/addCity?city=" + eCity + "&countryId=" + countryId).then(
+          response => response.json()
+        ).then(() => {
+          fetch("/api/getCity?city=" + eCity + "&countryId=" + countryId).then(
+            response => response.json()
+          ).then(data => {
+            editAddress(data[0].city_id);
+          });
+        });
+      } else {
+        editAddress(data[0].city_id);
+      }
+    })
+  }
+
+  function editAddress (cityId) {
+    fetch("/api/updateAddress?address=" + eAddress + "&addressId=" + selectedCustomer.address_id + "&cityId=" + cityId).then(
+      response => response.json()
+    ).then(data => {
+      saveCustomerInfo();
+    })
   }
 
   return (
@@ -151,7 +196,7 @@ function CustomersPage() {
               userDeleted ?
                 <i>Customer successfully deleted.</i> :
                 <i>No customer is selected.</i>
-            ) : (!editingCustomer ? <div>
+            ) : (!editingCustomer && !addingCustomer ? <div>
               <p><b>{selectedCustomer.first_name} {selectedCustomer.last_name} ({selectedCustomer.customer_id})</b></p>
               <p>Active Status: {selectedCustomer.active ? 'Active' : 'Inactive'}</p>
               <p>Email: {selectedCustomer.email}</p>
@@ -200,7 +245,7 @@ function CustomersPage() {
               <p><TextField id="inpEEmail" label="Email" variant="filled" value={eEmail} onChange={(event) => {
                 setEEmail(event.target.value);
               }}/></p>
-              {/* <p><TextField id="inpEAddress" label="Address" variant="filled" value={eAddress} onChange={(event) => {
+              <p><TextField id="inpEAddress" label="Address" variant="filled" value={eAddress} onChange={(event) => {
                 setEAddress(event.target.value);
               }}/>{' '}
               <TextField id="inpECity" label="City" variant="filled" value={eCity} onChange={(event) => {
@@ -208,7 +253,7 @@ function CustomersPage() {
               }}/>{' '}
               <TextField id="inpECountry" label="Country" variant="filled" value={eCountry} onChange={(event) => {
                 setECountry(event.target.value);
-              }}/></p> */}
+              }}/></p>
               <p><FormControl sx={{ m: 1, minWidth: 120 }}><InputLabel id="inpEStoreIdLabel">Store ID</InputLabel><Select
                 id="inpEStoreId"
                 value={eStoreId}
@@ -222,12 +267,13 @@ function CustomersPage() {
                 <MenuItem value={2}>2</MenuItem>
               </Select></FormControl></p>
               <p><Button variant="contained" onClick={() => {
-                saveCustomerInfo();
+                editCountry();
               }}>
-                SAVE
+                {editingCustomer ? "SAVE" : "ADD"}
               </Button>
               <Button onClick={() => {
                 setEditingCustomer(false);
+                setAddingCustomer(false);
               }}>
                 CANCEL
               </Button></p>
