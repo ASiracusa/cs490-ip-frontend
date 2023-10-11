@@ -30,11 +30,9 @@ function CustomersPage() {
   function searchCustomers () {
     fetch("/api/searchCustomers?customerId=" + customerId + "&firstName=" + firstName + "&lastName=" + lastName).then(
       response => response.json()
-    ).then(
-      data => {
-        setSearchedCustomers(data);
-      }
-    )
+    ).then(data => {
+      setSearchedCustomers(data);
+    })
   }
 
   function selectCustomer (customerId) {
@@ -44,18 +42,14 @@ function CustomersPage() {
     setAddingCustomer(false);
     fetch("/api/customerInfo?customerId=" + customerId).then(
       response => response.json()
-    ).then(
-      data => {
-        setSelectedCustomer(data[0]);
-      }
-    )
+    ).then(data => {
+      setSelectedCustomer(data[0]);
+    })
     fetch("/api/customersRentals?customerId=" + customerId).then(
       response => response.json()
-    ).then(
-      data => {
-        setCustomersRentals(data);
-      }
-    )
+    ).then(data => {
+      setCustomersRentals(data);
+    })
   }
 
   function returnRental (rentalId, inventoryId) {
@@ -64,9 +58,9 @@ function CustomersPage() {
     )
     fetch("/api/returnRental?rentalId=" + rentalId).then(
       response => response.json()
-    ).then(
+    ).then(() => {
       selectCustomer(customerId)
-    );
+    });
   }
 
   function deleteCustomer (customerId) {
