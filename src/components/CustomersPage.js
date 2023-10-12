@@ -292,7 +292,7 @@ function CustomersPage() {
                 setEActive(event.target.checked);
               }}/>Active</p>
               <p><TextField id="inpEEmail" label="Email" variant="filled" value={eEmail} onChange={(event) => {
-                if (/^[a-zA-Z0-9- ]{0,50}$/.test(event.target.value)) {
+                if (/^[a-zA-Z0-9- @.]{0,50}$/.test(event.target.value)) {
                   setEEmail(event.target.value);
                 }
               }}/></p>
