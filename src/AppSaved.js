@@ -3,6 +3,7 @@ import Navbar from './components/Navbar.js'
 import HomePage from './components/HomePage.js'
 import MoviesPage from './components/MoviesPage.js'
 import CustomersPage from './components/CustomersPage.js'
+import ReportsPage from './components/ReportsPage.js'
 import { Box } from '@mui/material'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
@@ -31,8 +32,8 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="movies" element={<MoviesPage />} />
             <Route path="customers" element={<CustomersPage />} />
-            <Route path="reports" element={<h6>Reports</h6>} />
-            <Route path="*" element={<h6>Something Else</h6>} />
+            <Route path="reports" element={<ReportsPage />} />
+            <Route path="*" element={<i>Could not find the given page.</i>} />
           </Route>
         </Routes>
       </BrowserRouter>
