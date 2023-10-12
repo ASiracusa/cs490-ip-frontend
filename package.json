@@ -23,7 +23,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test-movies": "cd src && del App.js && copy MoviesTest.js App.js && cd .. && react-scripts start"
+    "unit-test": "cd src && del App.js && copy TestCases.js App.js && cd .. && react-scripts start"
   },
   "eslintConfig": {
     "extends": [
