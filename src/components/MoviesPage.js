@@ -43,11 +43,13 @@ function MoviesPage() {
   }
 
   function verifyCustomer () {
-    fetch("/api/verifyCustomer?customerId=" + tempCustomerId).then(
-      response => response.json()
-    ).then(data => {
-      setSelectedCustomer(data[0]);
-    })
+    if (tempCustomerId.length > 0) {
+      fetch("/api/verifyCustomer?customerId=" + tempCustomerId).then(
+        response => response.json()
+      ).then(data => {
+        setSelectedCustomer(data[0]);
+      })
+    }
   }
 
   function rentMovie (inventoryId) {
@@ -65,13 +67,19 @@ function MoviesPage() {
           <Card variant="outlined" sx={{ padding: 2 }}>
             <Typography variant="h6">Search Movies</Typography>
             <p><TextField id="inpFilmName" label="Film Name" variant="filled" value={filmName} onChange={(event) => {
-              setFilmName(event.target.value);
+              if (/^[a-zA-Z0-9- ]{0,128}$/.test(event.target.value)) {
+                setFilmName(event.target.value);
+              }
             }}/></p>
             <p><TextField id="inpActorName" label="Actor Name" variant="filled" value={actorName} onChange={(event) => {
-              setActorName(event.target.value);
+              if (/^[a-zA-Z0-9- ]{0,91}$/.test(event.target.value)) {
+                setActorName(event.target.value);
+              }
             }}/></p>
             <p><TextField id="inpFilmGenre" label="Film Genre" variant="filled" value={filmGenre} onChange={(event) => {
-              setFilmGenre(event.target.value);
+              if (/^[a-zA-Z0-9- ]{0,25}$/.test(event.target.value)) {
+                setFilmGenre(event.target.value);
+              }
             }}/></p>
             <p><Button id="searchButton" variant="contained" onClick={() => {
               searchMovies();
@@ -112,7 +120,7 @@ function MoviesPage() {
             </div>}
             {typeof movieInventory != 'undefined' && <div>
               <Typography variant="h6">Inventory</Typography>
-              <p><TextField id="inpCustomerId" label="Customer ID" variant="filled" value={tempCustomerId} onChange={(event) => {
+              <p><TextField id="inpCustomerId" label="Customer ID" variant="filled" value={tempCustomerId} type='number' onChange={(event) => {
                 setTempCustomerId(event.target.value);
               }}/></p>
               <p><Grid container spacing={1} direction="row" justifyContent="flex-start" alignItems="center">

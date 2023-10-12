@@ -189,14 +189,18 @@ function CustomersPage() {
         <Grid item xs={6}>
           <Card variant="outlined" sx={{ padding: 2 }}>
             <Typography variant="h6">Search Customers</Typography>
-            <p><TextField id="inpCustId" label="Customer ID" variant="filled" value={customerId} onChange={(event) => {
+            <p><TextField id="inpCustId" label="Customer ID" variant="filled" value={customerId} type='number' onChange={(event) => {
               setCustomerId(event.target.value);
             }}/></p>
             <p><TextField id="inpCustFirstName" label="First Name" variant="filled" value={firstName} onChange={(event) => {
-              setFirstName(event.target.value);
+              if (/^[a-zA-Z0-9- ]{0,45}$/.test(event.target.value)) {
+                setFirstName(event.target.value);
+              }
             }}/></p>
             <p><TextField id="inpCustLastName" label="Last Name" variant="filled" value={lastName} onChange={(event) => {
-              setLastName(event.target.value);
+              if (/^[a-zA-Z0-9- ]{0,45}$/.test(event.target.value)) {
+                setLastName(event.target.value);
+              }
             }}/></p>
             <p><Button id="searchButton" variant="contained" onClick={() => {
               searchCustomers();
@@ -275,25 +279,37 @@ function CustomersPage() {
             <div>
               <Typography variant="h6">{editingCustomer ? "Editing Customer Details" : "Adding New Customer"}</Typography>
               <p><TextField id="inpEFirstName" label="First Name" variant="filled" value={eFirstName} onChange={(event) => {
-                setEFirstName(event.target.value);
+                if (/^[a-zA-Z0-9- ]{0,45}$/.test(event.target.value)) {
+                  setEFirstName(event.target.value);
+                }
               }}/>{' '}
               <TextField id="inpELastName" label="Last Name" variant="filled" value={eLastName} onChange={(event) => {
-                setELastName(event.target.value);
+                if (/^[a-zA-Z0-9- ]{0,45}$/.test(event.target.value)) {
+                  setELastName(event.target.value);
+                }
               }}/></p>
               <p><Checkbox inputProps={{ 'aria-label': 'controlled' }} checked={eActive} onChange={(event) => {
                 setEActive(event.target.checked);
               }}/>Active</p>
               <p><TextField id="inpEEmail" label="Email" variant="filled" value={eEmail} onChange={(event) => {
-                setEEmail(event.target.value);
+                if (/^[a-zA-Z0-9- ]{0,50}$/.test(event.target.value)) {
+                  setEEmail(event.target.value);
+                }
               }}/></p>
               <p><TextField id="inpEAddress" label="Address" variant="filled" value={eAddress} onChange={(event) => {
-                setEAddress(event.target.value);
+                if (/^[a-zA-Z0-9- ().,áéíóúýÁÉÍÓÚÝ]{0,50}$/.test(event.target.value)) {
+                  setEAddress(event.target.value);
+                }
               }}/>{' '}
               <TextField id="inpECity" label="City" variant="filled" value={eCity} onChange={(event) => {
-                setECity(event.target.value);
+                if (/^[a-zA-Z0-9- ().,áéíóúýÁÉÍÓÚÝ]{0,50}$/.test(event.target.value)) {
+                  setECity(event.target.value);
+                }
               }}/>{' '}
               <TextField id="inpECountry" label="Country" variant="filled" value={eCountry} onChange={(event) => {
-                setECountry(event.target.value);
+                if (/^[a-zA-Z0-9- ().,áéíóúýÁÉÍÓÚÝ]{0,50}$/.test(event.target.value)) {
+                  setECountry(event.target.value);
+                }
               }}/></p>
               <p><FormControl sx={{ m: 1, minWidth: 120 }}><InputLabel id="inpEStoreIdLabel">Store ID</InputLabel><Select
                 id="inpEStoreId"
